@@ -1,0 +1,8 @@
+venv/
+dumps/
+data/indian_books_with_places.jsonl
+data/indian_books_with_cities.jsonl
+data/_progress.json
+data/hin_hindi.jsonl
+*.log
+__pycache__/
