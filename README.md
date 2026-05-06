@@ -4,8 +4,6 @@ An interactive map showing cities mentioned in books written in Indian languages
 
 **🌐 Live Demo**: [https://prabhakar267.github.io/nagarkatha/](https://prabhakar267.github.io/nagarkatha/)
 
-![Map Preview](docs/preview.png)
-
 ## What is this?
 
 A visualization of **1,651 books** across **22 Indian languages** that reference specific cities. Each marker on the map represents a city, sized by the number of books associated with it. Click a marker to see the full list of books.
