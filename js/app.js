@@ -76,27 +76,57 @@ function createMarkers() {
     });
 }
 
+const BOOKS_PER_BATCH = 20;
+let currentCity = null;
+let renderedCount = 0;
+
+function renderBookItem(book) {
+    const bookLangs = book.languages.map(langName).join(', ');
+    const nativeTitle = book.title_native && book.title_native !== book.title
+        ? `<div class="book-title-native">${book.title_native}</div>` : '';
+    return `<div class="book-item">
+        <div class="book-title">${book.title}</div>
+        ${nativeTitle}
+        <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
+    </div>`;
+}
+
+function renderNextBatch() {
+    if (!currentCity || renderedCount >= currentCity.books.length) return;
+    const container = document.getElementById('book-list');
+    const end = Math.min(renderedCount + BOOKS_PER_BATCH, currentCity.books.length);
+    let html = '';
+    for (let i = renderedCount; i < end; i++) {
+        html += renderBookItem(currentCity.books[i]);
+    }
+    container.insertAdjacentHTML('beforeend', html);
+    renderedCount = end;
+}
+
+function onPreviewScroll(e) {
+    const el = e.target;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+        renderNextBatch();
+    }
+}
+
 function showPreview(city) {
     const panel = document.getElementById('preview');
+    currentCity = city;
+    renderedCount = 0;
     const langs = [...new Set(city.books.flatMap(b => b.languages))].map(langName);
     let html = `
         <h2>${city.city_name}</h2>
         <div class="city-meta">${city.country_code} · Population: ${city.population.toLocaleString()}<br>
         Lat: ${city.latitude.toFixed(4)}, Lon: ${city.longitude.toFixed(4)}</div>
         <div class="book-count">${city.books.length} book${city.books.length > 1 ? 's' : ''} · Languages: ${langs.join(', ')}</div>
+        <div id="book-list"></div>
     `;
-    city.books.forEach(book => {
-        const bookLangs = book.languages.map(langName).join(', ');
-        const nativeTitle = book.title_native && book.title_native !== book.title
-            ? `<div class="book-title-native">${book.title_native}</div>` : '';
-        html += `<div class="book-item">
-            <div class="book-title">${book.title}</div>
-            ${nativeTitle}
-            <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
-        </div>`;
-    });
     document.getElementById('preview-content').innerHTML = html;
+    renderNextBatch();
     panel.classList.add('open');
+    panel.removeEventListener('scroll', onPreviewScroll);
+    panel.addEventListener('scroll', onPreviewScroll);
 }
 
 function closePreview() {
