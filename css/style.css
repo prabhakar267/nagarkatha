@@ -1,0 +1,99 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+#map { width: 100vw; height: 100vh; }
+
+.stats-panel {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    min-width: 220px;
+}
+.stats-panel h2 {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+}
+.stats-panel .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #555;
+    margin: 4px 0;
+}
+.stats-panel .stat span:last-child {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.preview-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 380px;
+    height: 100vh;
+    z-index: 1001;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    padding: 24px;
+}
+.preview-panel.open { transform: translateX(0); }
+.preview-panel .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    background: none;
+    border: none;
+}
+.preview-panel h2 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    padding-right: 30px;
+}
+.preview-panel .city-meta {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 16px;
+}
+.preview-panel .book-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e67e22;
+    margin-bottom: 12px;
+}
+.preview-panel .book-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.preview-panel .book-item:last-child { border-bottom: none; }
+.preview-panel .book-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+.preview-panel .book-lang {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.leaflet-popup-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.popup-title { font-weight: 600; font-size: 14px; }
+.popup-meta { color: #666; margin-top: 4px; }
