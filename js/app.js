@@ -80,15 +80,48 @@ const BOOKS_PER_BATCH = 20;
 let currentCity = null;
 let renderedCount = 0;
 
-function renderBookItem(book) {
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderBookItem(book, index) {
     const bookLangs = book.languages.map(langName).join(', ');
     const nativeTitle = book.title_native && book.title_native !== book.title
-        ? `<div class="book-title-native">${book.title_native}</div>` : '';
-    return `<div class="book-item">
-        <div class="book-title">${book.title}</div>
-        ${nativeTitle}
-        <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
+        ? `<div class="book-title-native">${escapeHtml(book.title_native)}</div>` : '';
+    const olUrl = `https://openlibrary.org${book.key}`;
+
+    let details = '';
+    if (book.publishers && book.publishers.length) {
+        details += `<div class="book-detail"><span class="detail-label">Publisher</span> ${escapeHtml(book.publishers.join(', '))}</div>`;
+    }
+    if (book.subjects && book.subjects.length) {
+        details += `<div class="book-detail"><span class="detail-label">Subjects</span> ${escapeHtml(book.subjects.slice(0, 5).join(', '))}${book.subjects.length > 5 ? '…' : ''}</div>`;
+    }
+    if (book.number_of_pages) {
+        details += `<div class="book-detail"><span class="detail-label">Pages</span> ${book.number_of_pages}</div>`;
+    }
+    if (book.description) {
+        const desc = book.description.length > 200 ? book.description.slice(0, 200) + '…' : book.description;
+        details += `<div class="book-detail book-description">${escapeHtml(desc)}</div>`;
+    }
+    details += `<div class="book-detail"><a href="${olUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on Open Library →</a></div>`;
+
+    return `<div class="book-item" onclick="toggleBookDetails(this)">
+        <div class="book-header">
+            <div>
+                <div class="book-title">${escapeHtml(book.title)}</div>
+                ${nativeTitle}
+                <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
+            </div>
+            <span class="expand-icon">▸</span>
+        </div>
+        <div class="book-details">${details}</div>
     </div>`;
+}
+
+function toggleBookDetails(el) {
+    el.classList.toggle('expanded');
 }
 
 function renderNextBatch() {
@@ -97,7 +130,7 @@ function renderNextBatch() {
     const end = Math.min(renderedCount + BOOKS_PER_BATCH, currentCity.books.length);
     let html = '';
     for (let i = renderedCount; i < end; i++) {
-        html += renderBookItem(currentCity.books[i]);
+        html += renderBookItem(currentCity.books[i], i);
     }
     container.insertAdjacentHTML('beforeend', html);
     renderedCount = end;
