@@ -87,8 +87,11 @@ function showPreview(city) {
     `;
     city.books.forEach(book => {
         const bookLangs = book.languages.map(langName).join(', ');
+        const nativeTitle = book.title_native && book.title_native !== book.title
+            ? `<div class="book-title-native">${book.title_native}</div>` : '';
         html += `<div class="book-item">
             <div class="book-title">${book.title}</div>
+            ${nativeTitle}
             <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
         </div>`;
     });
