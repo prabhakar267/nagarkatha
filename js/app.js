@@ -83,11 +83,7 @@ function updateLangText() {
 }
 
 function initFilters() {
-    const allLangs = new Set();
-    citiesData.forEach(c => c.books.forEach(b => b.languages.forEach(l => {
-        if (LANG_NAMES[l]) allLangs.add(l);
-    })));
-    allLangsSorted = [...allLangs].sort((a, b) => langName(a).localeCompare(langName(b)));
+    allLangsSorted = Object.keys(LANG_NAMES).sort((a, b) => langName(a).localeCompare(langName(b)));
 
     updateLangDropdown();
 
@@ -378,12 +374,14 @@ function updateStats() {
         if (filtered.length > 0) {
             cityCount++;
             bookCount += filtered.length;
-            filtered.forEach(b => b.languages.forEach(l => langs.add(l)));
+            filtered.forEach(b => b.languages.forEach(l => {
+                if (LANG_NAMES[l]) langs.add(l);
+            }));
         }
     });
     document.getElementById('stat-cities').textContent = cityCount;
     document.getElementById('stat-books').textContent = bookCount.toLocaleString();
-    document.getElementById('stat-langs').textContent = selectedLangs.size || langs.size;
+    document.getElementById('stat-langs').textContent = langs.size;
 
     const emptyState = document.getElementById('empty-state');
     if (bookCount === 0) {
