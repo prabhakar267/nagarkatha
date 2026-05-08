@@ -219,7 +219,13 @@ function applyFilters() {
 }
 
 async function init() {
-    map = L.map('map', { worldCopyJump: true, zoomControl: true }).setView([22, 78], 5);
+    map = L.map('map', { worldCopyJump: true, zoomControl: true, minZoom: 2 }).setView([22, 78], 5);
+
+    // Prevent scroll/zoom propagation from UI panels to map
+    document.querySelectorAll('.stats-panel, .preview-panel').forEach(el => {
+        L.DomEvent.disableScrollPropagation(el);
+        L.DomEvent.disableClickPropagation(el);
+    });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors, © CARTO',
         maxZoom: 18,
