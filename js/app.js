@@ -85,13 +85,31 @@ function escapeHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function coverUrl(book) {
+    if (book.covers && book.covers.length) {
+        return `https://covers.openlibrary.org/b/id/${book.covers[0]}-M.jpg`;
+    }
+    return null;
+}
+
+function formatIsbn(book) {
+    const isbns = [...(book.isbn_13 || []), ...(book.isbn_10 || [])];
+    return isbns.length ? isbns[0] : null;
+}
+
 function renderBookItem(book, index) {
     const bookLangs = book.languages.map(langName).join(', ');
     const nativeTitle = book.title_native && book.title_native !== book.title
         ? `<div class="book-title-native">${escapeHtml(book.title_native)}</div>` : '';
     const olUrl = `https://openlibrary.org${book.key}`;
+    const cover = coverUrl(book);
+    const authorLine = book.by_statement
+        ? `<div class="book-author">${escapeHtml(book.by_statement)}</div>` : '';
 
     let details = '';
+    if (cover) {
+        details += `<div class="book-cover"><img src="${cover}" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>`;
+    }
     if (book.publishers && book.publishers.length) {
         details += `<div class="book-detail"><span class="detail-label">Publisher</span> ${escapeHtml(book.publishers.join(', '))}</div>`;
     }
@@ -100,6 +118,10 @@ function renderBookItem(book, index) {
     }
     if (book.number_of_pages) {
         details += `<div class="book-detail"><span class="detail-label">Pages</span> ${book.number_of_pages}</div>`;
+    }
+    const isbn = formatIsbn(book);
+    if (isbn) {
+        details += `<div class="book-detail"><span class="detail-label">ISBN</span> ${escapeHtml(isbn)}</div>`;
     }
     if (book.description) {
         const desc = book.description.length > 200 ? book.description.slice(0, 200) + '…' : book.description;
@@ -112,6 +134,7 @@ function renderBookItem(book, index) {
             <div>
                 <div class="book-title">${escapeHtml(book.title)}</div>
                 ${nativeTitle}
+                ${authorLine}
                 <div class="book-lang">${bookLangs}${book.publish_date ? ' · ' + book.publish_date : ''}</div>
             </div>
             <span class="expand-icon">▸</span>

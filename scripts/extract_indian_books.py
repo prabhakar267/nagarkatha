@@ -63,6 +63,7 @@ with open(OUTPUT, 'w') as f:
             "key": data.get("key"),
             "title": data.get("title"),
             "authors": [a.get("key") for a in data.get("authors", []) if isinstance(a, dict)],
+            "by_statement": data.get("by_statement"),
             "languages": [l.get("key") for l in data.get("languages", []) if isinstance(l, dict)],
             "subject_places": places,
             "subjects": data.get("subjects", []),
@@ -71,6 +72,7 @@ with open(OUTPUT, 'w') as f:
             "number_of_pages": data.get("number_of_pages"),
             "isbn_13": data.get("isbn_13", []),
             "isbn_10": data.get("isbn_10", []),
+            "covers": data.get("covers", []),
             "description": data.get("description", {}).get("value") if isinstance(data.get("description"), dict) else data.get("description"),
         }
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
