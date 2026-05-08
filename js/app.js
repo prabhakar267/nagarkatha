@@ -4,11 +4,9 @@ const LANG_NAMES = {
     '/languages/kan': 'Kannada', '/languages/mal': 'Malayalam', '/languages/pan': 'Punjabi',
     '/languages/urd': 'Urdu', '/languages/ori': 'Odia', '/languages/san': 'Sanskrit',
     '/languages/asm': 'Assamese', '/languages/kas': 'Kashmiri', '/languages/snd': 'Sindhi',
-    '/languages/sin': 'Sinhala', '/languages/nep': 'Nepali', '/languages/kon': 'Konkani',
-    '/languages/mai': 'Maithili', '/languages/sat': 'Santali', '/languages/doi': 'Dogri',
-    '/languages/mni': 'Manipuri', '/languages/bod': 'Bodo', '/languages/awa': 'Awadhi',
-    '/languages/bra': 'Braj Bhasha', '/languages/pra': 'Prakrit', '/languages/new': 'Newari',
-    '/languages/pus': 'Pashto', '/languages/bal': 'Baluchi',
+    '/languages/nep': 'Nepali', '/languages/kon': 'Konkani', '/languages/mai': 'Maithili',
+    '/languages/sat': 'Santali', '/languages/doi': 'Dogri', '/languages/mni': 'Manipuri',
+    '/languages/bod': 'Bodo',
 };
 
 function langName(key) {
