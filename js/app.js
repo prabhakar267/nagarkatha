@@ -4,11 +4,11 @@ const LANG_NAMES = {
     '/languages/kan': 'Kannada', '/languages/mal': 'Malayalam', '/languages/pan': 'Punjabi',
     '/languages/urd': 'Urdu', '/languages/ori': 'Odia', '/languages/san': 'Sanskrit',
     '/languages/asm': 'Assamese', '/languages/kas': 'Kashmiri', '/languages/snd': 'Sindhi',
-    '/languages/sin': 'Sinhala',
-    '/languages/nep': 'Nepali', '/languages/kon': 'Konkani', '/languages/mai': 'Maithili',
-    '/languages/sat': 'Santali', '/languages/doi': 'Dogri', '/languages/mni': 'Manipuri',
-    '/languages/bod': 'Bodo', '/languages/per': 'Persian', '/languages/ara': 'Arabic',
-    '/languages/eng': 'English',
+    '/languages/sin': 'Sinhala', '/languages/nep': 'Nepali', '/languages/kon': 'Konkani',
+    '/languages/mai': 'Maithili', '/languages/sat': 'Santali', '/languages/doi': 'Dogri',
+    '/languages/mni': 'Manipuri', '/languages/bod': 'Bodo', '/languages/awa': 'Awadhi',
+    '/languages/bra': 'Braj Bhasha', '/languages/pra': 'Prakrit', '/languages/new': 'Newari',
+    '/languages/pus': 'Pashto', '/languages/bal': 'Baluchi',
 };
 
 function langName(key) {
@@ -86,7 +86,9 @@ function updateLangText() {
 
 function initFilters() {
     const allLangs = new Set();
-    citiesData.forEach(c => c.books.forEach(b => b.languages.forEach(l => allLangs.add(l))));
+    citiesData.forEach(c => c.books.forEach(b => b.languages.forEach(l => {
+        if (LANG_NAMES[l]) allLangs.add(l);
+    })));
     allLangsSorted = [...allLangs].sort((a, b) => langName(a).localeCompare(langName(b)));
 
     updateLangDropdown();
