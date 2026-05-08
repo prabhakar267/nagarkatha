@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -14,18 +17,17 @@
     
     <div class="stats-panel">
         <h2>📚 Nagarkatha</h2>
-        <div class="stat"><span>Cities</span><span id="stat-cities">—</span></div>
-        <div class="stat"><span>Books</span><span id="stat-books">—</span></div>
-        <div class="stat"><span>Languages</span><span id="stat-langs">—</span></div>
+        <div class="stat"><span>🏙️ Cities</span><span id="stat-cities">—</span></div>
+        <div class="stat"><span>📖 Books</span><span id="stat-books">—</span></div>
+        <div class="stat"><span>🗣️ Languages</span><span id="stat-langs">—</span></div>
         <div class="empty-state" id="empty-state">
             <span class="empty-emoji">📭</span>
             <span class="empty-text">No books match your filters</span>
         </div>
-    </div>
-
-    <div class="filter-panel">
+        <div class="filter-divider"></div>
+        <div class="filter-heading">🔍 Filters</div>
         <div class="filter-group">
-            <label class="filter-label">Language</label>
+            <label class="filter-label">🗣️ Language</label>
             <div class="lang-dropdown" id="lang-dropdown">
                 <div class="lang-dropdown-toggle" onclick="toggleLangDropdown()">
                     <span id="lang-dropdown-text">All languages</span>
@@ -35,7 +37,7 @@
             </div>
         </div>
         <div class="filter-group">
-            <label class="filter-label">Year <span id="year-range-label"></span></label>
+            <label class="filter-label">📅 Year <span id="year-range-label"></span></label>
             <div class="year-slider" id="year-slider">
                 <div class="slider-track" id="slider-track"></div>
                 <div class="slider-range" id="slider-range"></div>

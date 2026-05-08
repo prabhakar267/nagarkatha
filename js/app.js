@@ -217,9 +217,10 @@ function applyFilters() {
 
 async function init() {
     map = L.map('map', { worldCopyJump: true, zoomControl: true }).setView([22, 78], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors, © CARTO',
+        maxZoom: 18,
+        subdomains: 'abcd'
     }).addTo(map);
 
     markers = L.markerClusterGroup({
@@ -284,23 +285,23 @@ function renderBookItem(book, index) {
         details += `<div class="book-cover"><img src="${cover}" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>`;
     }
     if (book.publishers && book.publishers.length) {
-        details += `<div class="book-detail"><span class="detail-label">Publisher</span> ${escapeHtml(book.publishers.join(', '))}</div>`;
+        details += `<div class="book-detail"><span class="detail-label">🏛️ Publisher</span> ${escapeHtml(book.publishers.join(', '))}</div>`;
     }
     if (book.subjects && book.subjects.length) {
-        details += `<div class="book-detail"><span class="detail-label">Subjects</span> ${escapeHtml(book.subjects.slice(0, 5).join(', '))}${book.subjects.length > 5 ? '…' : ''}</div>`;
+        details += `<div class="book-detail"><span class="detail-label">🏷️ Subjects</span> ${escapeHtml(book.subjects.slice(0, 5).join(', '))}${book.subjects.length > 5 ? '…' : ''}</div>`;
     }
     if (book.number_of_pages) {
-        details += `<div class="book-detail"><span class="detail-label">Pages</span> ${book.number_of_pages}</div>`;
+        details += `<div class="book-detail"><span class="detail-label">📄 Pages</span> ${book.number_of_pages}</div>`;
     }
     const isbn = formatIsbn(book);
     if (isbn) {
-        details += `<div class="book-detail"><span class="detail-label">ISBN</span> ${escapeHtml(isbn)}</div>`;
+        details += `<div class="book-detail"><span class="detail-label">🔢 ISBN</span> ${escapeHtml(isbn)}</div>`;
     }
     if (book.description) {
         const desc = book.description.length > 200 ? book.description.slice(0, 200) + '…' : book.description;
         details += `<div class="book-detail book-description">${escapeHtml(desc)}</div>`;
     }
-    details += `<div class="book-detail"><a href="${olUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on Open Library →</a></div>`;
+    details += `<div class="book-detail"><a href="${olUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 View on Open Library →</a></div>`;
 
     return `<div class="book-item" onclick="toggleBookDetails(this)">
         <div class="book-header">
@@ -346,9 +347,9 @@ function showPreview(city) {
     const langs = [...new Set(city.books.flatMap(b => b.languages))].map(langName);
     let html = `
         <h2>${city.city_name}</h2>
-        <div class="city-meta">${city.country_code} · Population: ${city.population.toLocaleString()}<br>
-        Lat: ${city.latitude.toFixed(4)}, Lon: ${city.longitude.toFixed(4)}</div>
-        <div class="book-count">${city.books.length} book${city.books.length > 1 ? 's' : ''} · Languages: ${langs.join(', ')}</div>
+        <div class="city-meta">👥 ${city.country_code} · Population: ${city.population.toLocaleString()}<br>
+        📍 Lat: ${city.latitude.toFixed(4)}, Lon: ${city.longitude.toFixed(4)}</div>
+        <div class="book-count">📚 ${city.books.length} book${city.books.length > 1 ? 's' : ''} · 🗣️ ${langs.join(', ')}</div>
         <div id="book-list"></div>
     `;
     document.getElementById('preview-content').innerHTML = html;
