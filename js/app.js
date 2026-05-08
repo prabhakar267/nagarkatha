@@ -15,6 +15,205 @@ function langName(key) {
 }
 
 let map, markers, citiesData = [];
+let selectedLangs = new Set();
+let yearMin = 1820, yearMax = 2020;
+
+function parseYear(dateStr) {
+    if (!dateStr) return null;
+    const m = dateStr.match(/(\d{4})/);
+    return m ? parseInt(m[1]) : null;
+}
+
+function bookMatchesFilters(book) {
+    if (selectedLangs.size > 0) {
+        if (!book.languages.some(l => selectedLangs.has(l))) return false;
+    }
+    const year = parseYear(book.publish_date);
+    if (year !== null) {
+        if (year < yearMin || year > yearMax + 9) return false;
+    }
+    return true;
+}
+
+function getFilteredBooks(city) {
+    return city.books.filter(bookMatchesFilters);
+}
+
+let allLangsSorted = [];
+
+function getLangCounts() {
+    const counts = {};
+    citiesData.forEach(c => c.books.forEach(b => {
+        const year = parseYear(b.publish_date);
+        if (year !== null && (year < yearMin || year > yearMax + 9)) return;
+        b.languages.forEach(l => { counts[l] = (counts[l] || 0) + 1; });
+    }));
+    return counts;
+}
+
+function updateLangDropdown() {
+    const counts = getLangCounts();
+    const menu = document.getElementById('lang-dropdown-menu');
+    let changed = false;
+    menu.innerHTML = allLangsSorted.map(l => {
+        const count = counts[l] || 0;
+        const disabled = count === 0;
+        const checked = selectedLangs.has(l);
+        if (disabled && checked) {
+            selectedLangs.delete(l);
+            changed = true;
+        }
+        return `<label class="${disabled ? 'lang-disabled' : ''}">
+            <input type="checkbox" value="${l}" onchange="onLangChange()"
+                ${checked && !disabled ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+            ${langName(l)} (${count})
+        </label>`;
+    }).join('');
+    if (changed) updateLangText();
+}
+
+function updateLangText() {
+    const text = document.getElementById('lang-dropdown-text');
+    if (selectedLangs.size === 0) {
+        text.textContent = 'All languages';
+    } else if (selectedLangs.size <= 2) {
+        text.textContent = [...selectedLangs].map(langName).join(', ');
+    } else {
+        text.textContent = `${selectedLangs.size} selected`;
+    }
+}
+
+function initFilters() {
+    const allLangs = new Set();
+    citiesData.forEach(c => c.books.forEach(b => b.languages.forEach(l => allLangs.add(l))));
+    allLangsSorted = [...allLangs].sort((a, b) => langName(a).localeCompare(langName(b)));
+
+    updateLangDropdown();
+
+    initYearSlider();
+
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('lang-dropdown');
+        if (!dropdown.contains(e.target)) {
+            document.getElementById('lang-dropdown-menu').classList.remove('open');
+        }
+    });
+}
+
+function toggleLangDropdown() {
+    document.getElementById('lang-dropdown-menu').classList.toggle('open');
+}
+
+function onLangChange() {
+    const checkboxes = document.querySelectorAll('#lang-dropdown-menu input[type="checkbox"]');
+    selectedLangs.clear();
+    checkboxes.forEach(cb => { if (cb.checked) selectedLangs.add(cb.value); });
+    updateLangText();
+    applyFilters();
+}
+
+function updateYearLabel() {
+    document.getElementById('year-range-label').textContent = `${yearMin}s – ${yearMax}s`;
+}
+
+const DECADE_MIN = 1820, DECADE_MAX = 2020;
+
+function initYearSlider() {
+    const slider = document.getElementById('year-slider');
+    const thumbMin = document.getElementById('thumb-min');
+    const thumbMax = document.getElementById('thumb-max');
+    const range = document.getElementById('slider-range');
+
+    function valueToPercent(val) {
+        return (val - DECADE_MIN) / (DECADE_MAX - DECADE_MIN) * 100;
+    }
+
+    function percentToValue(pct) {
+        const raw = DECADE_MIN + (pct / 100) * (DECADE_MAX - DECADE_MIN);
+        return Math.round(raw / 10) * 10;
+    }
+
+    function updatePositions() {
+        const pMin = valueToPercent(yearMin);
+        const pMax = valueToPercent(yearMax);
+        thumbMin.style.left = pMin + '%';
+        thumbMax.style.left = pMax + '%';
+        range.style.left = pMin + '%';
+        range.style.width = (pMax - pMin) + '%';
+    }
+
+    function startDrag(thumb, isMin) {
+        function onMove(e) {
+            e.preventDefault();
+            const rect = slider.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let pct = (clientX - rect.left) / rect.width * 100;
+            pct = Math.max(0, Math.min(100, pct));
+            let val = percentToValue(pct);
+            if (isMin) {
+                val = Math.min(val, yearMax);
+                yearMin = val;
+            } else {
+                val = Math.max(val, yearMin);
+                yearMax = val;
+            }
+            updatePositions();
+            updateYearLabel();
+            applyFilters();
+        }
+        function onEnd() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove);
+        document.addEventListener('touchend', onEnd);
+    }
+
+    thumbMin.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(thumbMin, true); });
+    thumbMin.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(thumbMin, true); });
+    thumbMax.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(thumbMax, false); });
+    thumbMax.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(thumbMax, false); });
+
+    updatePositions();
+    updateYearLabel();
+}
+
+function applyFilters() {
+    updateLangDropdown();
+    markers.clearLayers();
+    citiesData.forEach(city => {
+        const filtered = getFilteredBooks(city);
+        if (filtered.length === 0) return;
+        const bookCount = filtered.length;
+        const radius = Math.min(6 + Math.log2(bookCount + 1) * 3, 16);
+        const marker = L.circleMarker([city.latitude, city.longitude], {
+            radius: radius,
+            fillColor: '#e67e22',
+            color: '#d35400',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        });
+        marker.cityData = city;
+        marker.filteredBooks = filtered;
+        marker.bindPopup(`
+            <div class="popup-title">${city.city_name}</div>
+            <div class="popup-meta">${city.country_code} · Pop: ${city.population.toLocaleString()}<br>${bookCount} book${bookCount > 1 ? 's' : ''}</div>
+        `, { closeButton: false, offset: [0, -5] });
+        marker.on('mouseover', () => marker.openPopup());
+        marker.on('mouseout', () => setTimeout(() => marker.closePopup(), 300));
+        marker.on('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            showPreview({ ...city, books: filtered });
+        });
+        markers.addLayer(marker);
+    });
+    updateStats();
+}
 
 async function init() {
     map = L.map('map', { worldCopyJump: true, zoomControl: true }).setView([22, 78], 5);
@@ -43,38 +242,12 @@ async function init() {
 
     const resp = await fetch('data/cities_for_map.json');
     citiesData = await resp.json();
-    createMarkers();
-    updateStats();
+    initFilters();
+    applyFilters();
     map.addLayer(markers);
     map.on('click', closePreview);
 }
 
-function createMarkers() {
-    citiesData.forEach(city => {
-        const bookCount = city.books.length;
-        const radius = Math.min(6 + Math.log2(bookCount + 1) * 3, 16);
-        const marker = L.circleMarker([city.latitude, city.longitude], {
-            radius: radius,
-            fillColor: '#e67e22',
-            color: '#d35400',
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.8
-        });
-        marker.cityData = city;
-        marker.bindPopup(`
-            <div class="popup-title">${city.city_name}</div>
-            <div class="popup-meta">${city.country_code} · Pop: ${city.population.toLocaleString()}<br>${bookCount} book${bookCount > 1 ? 's' : ''}</div>
-        `, { closeButton: false, offset: [0, -5] });
-        marker.on('mouseover', () => marker.openPopup());
-        marker.on('mouseout', () => setTimeout(() => marker.closePopup(), 300));
-        marker.on('click', (e) => {
-            L.DomEvent.stopPropagation(e);
-            showPreview(city);
-        });
-        markers.addLayer(marker);
-    });
-}
 
 const BOOKS_PER_BATCH = 20;
 let currentCity = null;
@@ -190,11 +363,26 @@ function closePreview() {
 }
 
 function updateStats() {
-    const allBooks = citiesData.reduce((sum, c) => sum + c.books.length, 0);
-    const allLangs = new Set(citiesData.flatMap(c => c.books.flatMap(b => b.languages)));
-    document.getElementById('stat-cities').textContent = citiesData.length;
-    document.getElementById('stat-books').textContent = allBooks.toLocaleString();
-    document.getElementById('stat-langs').textContent = allLangs.size;
+    let cityCount = 0, bookCount = 0;
+    const langs = new Set();
+    citiesData.forEach(c => {
+        const filtered = getFilteredBooks(c);
+        if (filtered.length > 0) {
+            cityCount++;
+            bookCount += filtered.length;
+            filtered.forEach(b => b.languages.forEach(l => langs.add(l)));
+        }
+    });
+    document.getElementById('stat-cities').textContent = cityCount;
+    document.getElementById('stat-books').textContent = bookCount.toLocaleString();
+    document.getElementById('stat-langs').textContent = selectedLangs.size || langs.size;
+
+    const emptyState = document.getElementById('empty-state');
+    if (bookCount === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
 }
 
 init();

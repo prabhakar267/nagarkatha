@@ -17,6 +17,32 @@
         <div class="stat"><span>Cities</span><span id="stat-cities">—</span></div>
         <div class="stat"><span>Books</span><span id="stat-books">—</span></div>
         <div class="stat"><span>Languages</span><span id="stat-langs">—</span></div>
+        <div class="empty-state" id="empty-state">
+            <span class="empty-emoji">📭</span>
+            <span class="empty-text">No books match your filters</span>
+        </div>
+    </div>
+
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label class="filter-label">Language</label>
+            <div class="lang-dropdown" id="lang-dropdown">
+                <div class="lang-dropdown-toggle" onclick="toggleLangDropdown()">
+                    <span id="lang-dropdown-text">All languages</span>
+                    <span class="dropdown-arrow">▾</span>
+                </div>
+                <div class="lang-dropdown-menu" id="lang-dropdown-menu"></div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Year <span id="year-range-label"></span></label>
+            <div class="year-slider" id="year-slider">
+                <div class="slider-track" id="slider-track"></div>
+                <div class="slider-range" id="slider-range"></div>
+                <div class="slider-thumb" id="thumb-min"></div>
+                <div class="slider-thumb" id="thumb-max"></div>
+            </div>
+        </div>
     </div>
 
     <div class="preview-panel" id="preview">
