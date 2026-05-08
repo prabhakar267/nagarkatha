@@ -5,4 +5,6 @@ data/indian_books_with_cities.jsonl
 data/_progress.json
 data/hin_hindi.jsonl
 *.log
+*.md
+!README.md
 __pycache__/

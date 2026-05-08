@@ -16,7 +16,7 @@ INDIAN_LANGS = [
     '/languages/hin', '/languages/tam', '/languages/tel', '/languages/ben',
     '/languages/mar', '/languages/guj', '/languages/kan', '/languages/mal',
     '/languages/pan', '/languages/urd', '/languages/ori', '/languages/san',
-    '/languages/asm', '/languages/kas', '/languages/sin', '/languages/nep',
+    '/languages/asm', '/languages/kas', '/languages/snd', '/languages/nep',
     '/languages/kon', '/languages/mai', '/languages/sat', '/languages/doi',
     '/languages/mni', '/languages/bod',
 ]
@@ -34,7 +34,7 @@ WHERE column0 = '/type/edition'
     OR column4 LIKE '%/languages/ben%' OR column4 LIKE '%/languages/mar%' OR column4 LIKE '%/languages/guj%'
     OR column4 LIKE '%/languages/kan%' OR column4 LIKE '%/languages/mal%' OR column4 LIKE '%/languages/pan%'
     OR column4 LIKE '%/languages/urd%' OR column4 LIKE '%/languages/ori%' OR column4 LIKE '%/languages/san%'
-    OR column4 LIKE '%/languages/asm%' OR column4 LIKE '%/languages/kas%' OR column4 LIKE '%/languages/sin%'
+    OR column4 LIKE '%/languages/asm%' OR column4 LIKE '%/languages/kas%' OR column4 LIKE '%/languages/snd%'
     OR column4 LIKE '%/languages/nep%' OR column4 LIKE '%/languages/kon%' OR column4 LIKE '%/languages/mai%'
     OR column4 LIKE '%/languages/sat%' OR column4 LIKE '%/languages/doi%' OR column4 LIKE '%/languages/mni%'
     OR column4 LIKE '%/languages/bod%')
